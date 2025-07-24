@@ -11,7 +11,7 @@ public class Round {
 
   public Round(RandomGenerator rng) {
     this.rng = rng;
-    reset();
+    //reset();
   }
 
   public State getState() {
@@ -41,25 +41,41 @@ public class Round {
   }
 
   public enum State {
-    COME_OUT,
-    POINT,
-    WIN,
-    LOSS;
 
-    public State next(int roll, int point) {
-      return switch (this) {
-        case COME_OUT -> switch (roll) {
-          case 2, 3, 12 -> LOSS;
+    COME_OUT(false) {
+      @Override
+      public State next(int roll, int point) {
+        return switch (roll) {
           case 7, 11 -> WIN;
+          case 2, 3, 12 -> LOSS;
           default -> POINT;
         };
-        case POINT -> (roll == point)
+      }
+    },
+
+    POINT(false) {
+      @Override
+      public State next(int roll, int point) {
+        return (roll == point)
             ? WIN
             : (roll == 7)
                 ? LOSS
                 : POINT;
-        case WIN, LOSS -> throw new IllegalStateException();
-      };
+      }
+    },
+
+    WIN(true),
+
+    LOSS(true);
+
+    private final boolean terminal;
+
+    State(boolean terminal) {
+      this.terminal = terminal;
+    }
+
+    public State next(int roll, int point) {
+      throw new IllegalStateException();
     }
 
     public static State initial() {
@@ -67,10 +83,11 @@ public class Round {
     }
 
     public boolean isTerminal() {
-      return switch (this) {
-        case WIN, LOSS -> true;
-        default -> false;
-      };
+//      return switch (this) {
+//        case WIN, LOSS -> true;
+//        default -> false;
+//      };
+      return terminal;
     }
 
     public boolean isWin() {
