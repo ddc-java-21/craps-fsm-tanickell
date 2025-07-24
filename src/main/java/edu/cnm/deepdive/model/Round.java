@@ -21,6 +21,7 @@ public class Round {
 
 
   public State play() {
+    reset();
     while (!state.isTerminal()) {
       int die1 = rng.nextInt(1, 7); // rng.nextInt(6) + 1
       int die2 = rng.nextInt(1, 7);
@@ -47,10 +48,11 @@ public class Round {
         return switch (roll) {
           case 7, 11 -> WIN;
           case 2, 3, 12 -> LOSS;
-          default -> COME_OUT;
+          default -> POINT;
         };
       }
     },
+
     POINT(false) {
       @Override
       public State next(int roll, int point) {
@@ -61,7 +63,9 @@ public class Round {
                 : POINT;
       }
     },
+
     WIN(true),
+
     LOSS(true);
 
     private final boolean terminal;
